@@ -1,0 +1,4 @@
+name: StatExport
+version: '${project.version}'
+main: de.benikum.statexport.Main
+api-version: '1.20'
