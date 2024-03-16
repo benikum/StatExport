@@ -3,5 +3,5 @@ version: '${project.version}'
 main: de.benikum.statexport.Main
 api-version: '1.20'
 commands:
-  stat:
-    usage: /stat <add/remove/export>
+  csvexport:
+    usage: /csvexport <add/remove/export>

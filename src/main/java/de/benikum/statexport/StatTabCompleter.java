@@ -29,7 +29,16 @@ public class StatTabCompleter implements TabCompleter {
         } else if (args.length == 2) {
             if (args[0].equals("add")) {
                 for (Statistic statistic : Statistic.values()) {
-                    tabCompleteList.add(statistic.name());
+                    boolean foundInConfig = false;
+                    for (String configStat : mainInstance.getStatsInConfig()) {
+                        if (configStat.split("\\.")[0].equals(statistic.name())) {
+                            foundInConfig = true;
+                            break;
+                        }
+                    }
+                    if (!foundInConfig || statistic.isSubstatistic()) {
+                        tabCompleteList.add(statistic.name());
+                    }
                 }
             } else if (args[0].equals("remove")) {
                 tabCompleteList.addAll(mainInstance.getStatsInConfig());

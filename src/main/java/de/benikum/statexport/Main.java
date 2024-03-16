@@ -19,11 +19,11 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getCommand("stat").setExecutor(new StatCommand(this));
-        getCommand("stat").setTabCompleter(new StatTabCompleter(this));
+        getCommand("csvexport").setExecutor(new StatCommand(this));
+        getCommand("csvexport").setTabCompleter(new StatTabCompleter(this));
     }
     
-    public void exportStats() {
+    public void exportStatsTXT() {
         try {
             for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
                 File file = new File(getDataFolder(), offlinePlayer.getName() + ".txt");

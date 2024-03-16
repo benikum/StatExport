@@ -26,7 +26,7 @@ public class StatCommand implements CommandExecutor {
         
         if (args.length == 1) {
             if (cmd0.equals("export")) {
-                mainInstance.exportStats();
+                mainInstance.exportStatsTXT();
                 player.sendMessage("§aExported all playerstats");
             }
         } else {
