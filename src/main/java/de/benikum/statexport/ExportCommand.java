@@ -9,12 +9,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class StatCommand implements CommandExecutor {
+public class ExportCommand implements CommandExecutor {
     Main mainInstance;
     
-    public StatCommand(Main mainInstance) {
+    public ExportCommand(Main mainInstance) {
         this.mainInstance = mainInstance;
     }
+    
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player)) return false;

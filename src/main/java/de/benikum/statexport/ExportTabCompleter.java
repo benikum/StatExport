@@ -12,10 +12,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatTabCompleter implements TabCompleter {
+public class ExportTabCompleter implements TabCompleter {
     Main mainInstance;
     
-    public StatTabCompleter(Main mainInstance) {
+    public ExportTabCompleter(Main mainInstance) {
         this.mainInstance = mainInstance;
     }
     
@@ -52,7 +52,7 @@ public class StatTabCompleter implements TabCompleter {
                     for (EntityType entityType : EntityType.values()) {
                         tabCompleteList.add(entityType.name());
                     }
-                } if (sType == Statistic.Type.ITEM || sType == Statistic.Type.BLOCK) {
+                } else if (sType == Statistic.Type.ITEM || sType == Statistic.Type.BLOCK) {
                     for (Material material : Material.values()) {
                         tabCompleteList.add(material.name());
                     }

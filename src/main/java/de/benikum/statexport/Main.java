@@ -1,5 +1,6 @@
 package de.benikum.statexport;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -19,20 +20,74 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getCommand("csvexport").setExecutor(new StatCommand(this));
-        getCommand("csvexport").setTabCompleter(new StatTabCompleter(this));
+        getCommand("statexport").setExecutor(new ExportCommand(this));
+        getCommand("statexport").setTabCompleter(new ExportTabCompleter(this));
+        getCommand("statleaderboard").setExecutor(new LeaderboardCommand(this));
+        getCommand("statleaderboard").setTabCompleter(new LeaderboardTabCompleter());
+    }
+    
+    public void printLeaderboard(Statistic statistic) {
+        Map<String, Integer> playerNameIntegerMap = new HashMap<>();
+        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+            playerNameIntegerMap.put(offlinePlayer.getName(), offlinePlayer.getStatistic(statistic));
+        }
+        compileLeaderboard(statistic.name(), playerNameIntegerMap);
+    }
+    public void printLeaderboard(Statistic statistic, EntityType entityType) {
+        Map<String, Integer> playerNameIntegerMap = new HashMap<>();
+        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+            playerNameIntegerMap.put(offlinePlayer.getName(), offlinePlayer.getStatistic(statistic, entityType));
+        }
+        compileLeaderboard(statistic.name() + "." + entityType.name(), playerNameIntegerMap);
+    }
+    public void printLeaderboard(Statistic statistic, Material material) {
+        Map<String, Integer> playerNameIntegerMap = new HashMap<>();
+        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+            playerNameIntegerMap.put(offlinePlayer.getName(), offlinePlayer.getStatistic(statistic, material));
+        }
+        compileLeaderboard(statistic.name() + "." + material.name(), playerNameIntegerMap);
+    }
+    
+    private void compileLeaderboard(String statistic, Map<String, Integer> playerIntegerMap) {
+        List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(playerIntegerMap.entrySet());
+        
+        sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+        
+        int index = 0;
+        
+        StringBuilder lineString = new StringBuilder();
+        for (int i = 0; i < (statistic.length() + 6); i++) {
+            lineString.append("-");
+        }
+        
+        Bukkit.broadcast(Component.text("§9§l" + lineString));
+        Bukkit.broadcast(Component.text("§9§l---§c§l" + statistic + "§9§l---"));
+        Bukkit.broadcast(Component.text("§9§l" + lineString));
+        for (Map.Entry<String, Integer> entry : sortedEntries) {
+            index++;
+            String name = entry.getKey();
+            int value = entry.getValue();
+            String colorprefix = "";
+            if (index == 1) colorprefix = "§6";
+            else if (index == 2) colorprefix = "§7";
+            else if (index == 3) colorprefix = "§4";
+            Bukkit.broadcast(Component.text(colorprefix + index + ". " + name + " : " + value));
+        }
+        Bukkit.broadcast(Component.text("§9§l" + lineString));
     }
     
     public void exportStatsTXT() {
         try {
+            File file = new File(getDataFolder(), "player_stats.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter writer = new FileWriter(file);
+            
             for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-                File file = new File(getDataFolder(), offlinePlayer.getName() + ".txt");
-                if (!file.exists()) {
-                    file.createNewFile();
-                }
-                FileWriter writer = new FileWriter(file);
                 UUID playerId = offlinePlayer.getUniqueId();
                 writer.write("Player: " + offlinePlayer.getName() + " (UUID: " + playerId + ")\n\n");
+                
                 for (String statisticName : getStatsInConfig()) {
                     String[] statisticNameArray = statisticName.split("\\.");
                     Statistic statistic;
@@ -61,8 +116,11 @@ public final class Main extends JavaPlugin {
                         } catch (IllegalArgumentException ignored) {}
                     }
                 }
-                writer.close();
+                
+                writer.write("\n");
             }
+            
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
