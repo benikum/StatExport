@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public final class Main extends JavaPlugin {
@@ -26,6 +27,7 @@ public final class Main extends JavaPlugin {
         getCommand("statleaderboard").setTabCompleter(new LeaderboardTabCompleter());
     }
     
+    // prints all players with their value of the given statistic in the chat
     public void printLeaderboard(Statistic statistic) {
         Map<String, Integer> playerNameIntegerMap = new HashMap<>();
         for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
@@ -48,6 +50,7 @@ public final class Main extends JavaPlugin {
         compileLeaderboard(statistic.name() + "." + material.name(), playerNameIntegerMap);
     }
     
+    // converts the map from printLeaderboard() to the chat message
     private void compileLeaderboard(String statistic, Map<String, Integer> playerIntegerMap) {
         List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(playerIntegerMap.entrySet());
         
@@ -61,7 +64,7 @@ public final class Main extends JavaPlugin {
         }
         
         Bukkit.broadcast(Component.text("§9§l" + lineString));
-        Bukkit.broadcast(Component.text("§9§l---§c§l" + statistic + "§9§l---"));
+        Bukkit.broadcast(Component.text("§0§l---§c§l" + statistic + "§0§l---"));
         Bukkit.broadcast(Component.text("§9§l" + lineString));
         for (Map.Entry<String, Integer> entry : sortedEntries) {
             index++;
@@ -76,12 +79,18 @@ public final class Main extends JavaPlugin {
         Bukkit.broadcast(Component.text("§9§l" + lineString));
     }
     
+    // saves all
     public void exportStatsTXT() {
         try {
-            File file = new File(getDataFolder(), "player_stats.txt");
+            
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm");
+            String fileName = "player_stats_" + dateFormat.format(new Date()) + ".txt";
+            
+            File file = new File(getDataFolder(), fileName);
             if (!file.exists()) {
                 file.createNewFile();
             }
+            
             FileWriter writer = new FileWriter(file);
             
             for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
@@ -126,6 +135,7 @@ public final class Main extends JavaPlugin {
         }
     }
     
+    // add to the config list of stats to export
     public void addToConfig(String value) {
         if (getStatsInConfig().contains(value)) return;
         FileConfiguration config = getConfig();

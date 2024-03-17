@@ -19,9 +19,7 @@ public class LeaderboardCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player)) return false;
-        // valid sender
         if (args.length == 0) return false;
-        // some parameters given
         Player player = (Player) sender;
         
         String cmd0 = args[0].toUpperCase();
